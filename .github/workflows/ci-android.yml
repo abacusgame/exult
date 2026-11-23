@@ -152,8 +152,10 @@ jobs:
           cd ./../build/files && make -j2
           cd ./../data && make -j2
           cd ./../android && make -j2
+      - name: Copy APK to workspace
+        run: cp ../build/android/app/build/outputs/apk/debug/*.apk ./
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Exult-VoiceActing-Android-APK
-          path: ../build/android/app/build/outputs/apk/debug/*.apk
+          path: "*.apk"
