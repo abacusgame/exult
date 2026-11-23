@@ -74,3 +74,4 @@ $ /path/to/Android/Sdk/build-tools/version/apksigner sign --ks path/to/my/androi
 ```
 The final release APK will be located in `app-release-signed.apk`.
 
+
