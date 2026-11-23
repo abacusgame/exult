@@ -123,12 +123,8 @@ jobs:
       - name: Install dependencies
         run: |
           if ! apt-fast -- help &> /dev/null; then
-            sudo add-apt-repository -u -y ppa:apt-fast/stable
-            sudo apt-get update
-            echo debconf apt-fast/maxdownloads string 16 | sudo debconf-set-selections
-            echo debconf apt-fast/dlflag boolean true | sudo debconf-set-selections
-            echo debconf apt-fast/aptmanager string apt-get | sudo debconf-set-selections
-            DEBIAN_FRONTEND=noninteractive sudo apt install -y apt-fast
+           sudo apt-get update
+          sudo apt-get install -y autoconf-archive ninja-build
           else
             sudo apt-fast update
           fi
