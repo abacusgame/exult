@@ -136,20 +136,34 @@ jobs:
       - name: Configure
         run: |
           cd ./../build
-          ./../exult/configure --enable-data --enable-android-apk=debug \
+          ./../exult/configure --enable-data --enable-android-apk=release \
             --with-android-arch=arm64-v8a \
             --disable-exult --disable-tools --disable-timidity-midi --disable-alsa \
             --disable-fluidsynth --disable-mt32emu --disable-all-hq-scalers \
             --disable-nxbr --disable-zip-support
+
       - name: Build
         run: |
           cd ./../build/files && make -j2
           cd ./../data && make -j2
           cd ./../android && make -j2
-      - name: Copy APK to workspace
-        run: cp ../build/android/app/build/outputs/apk/debug/*.apk ./
+
+      - name: Sign Release APK
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > release.jks
+          UNSIGNED_APK=$(find ../build/android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
+          "$BUILD_TOOLS/zipalign" -v -p 4 "$UNSIGNED_APK" aligned.apk
+          "$BUILD_TOOLS/apksigner" sign \
+            --ks release.jks \
+            --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
+            --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
+            --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
+            --out Exult-VoiceActing-Release.apk \
+            aligned.apk
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Exult-VoiceActing-Android-APK
-          path: "*.apk"
+          name: Exult-VoiceActing-Android-Release-APK
+          path: Exult-VoiceActing-Release.apk
