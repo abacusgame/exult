@@ -126,6 +126,9 @@ jobs:
           sudo apt-get install -y autoconf-archive ninja-build
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          repository: Marcus10110/exult
+          ref: refs/pull/1/head
       - name: Run autoreconf
         run: |
           mkdir ./../build
